@@ -8,9 +8,19 @@ Uses [llama.cpp](https://github.com/ggerganov/llama.cpp) with OpenCL backend opt
 
 Tested on Samsung Galaxy S25 (Snapdragon 8 Elite, Adreno 830):
 
-| Model | Prompt Processing | Token Generation |
-|-------|-------------------|------------------|
-| Qwen2.5-0.5B Q4_0 | 388 tok/s | 63.5 tok/s |
+| Model | Size | Quantization | Prompt (tok/s) | Generation (tok/s) |
+|-------|------|--------------|----------------|-------------------|
+| Qwen2.5-0.5B | 403 MB | Q4_0 | 388 | 63.5 |
+| Qwen2.5-1.5B | 1.0 GB | Q4_0 | 379 | 34.5 |
+| Llama-3.2-1B | 730 MB | Q4_0 | 331 | 37.7 |
+| Llama-3.2-3B | 1.8 GB | Q4_0 | 194 | 18.5 |
+| Phi-3-mini-4k | 2.3 GB | Q4_K_M | 11 | 4.1 |
+
+**Notes:**
+- Q4_0 quantization is optimized for Adreno GPUs and runs significantly faster
+- Q4_K_M (Phi-3) uses different kernels that aren't as well optimized for Adreno
+- 0.5B-1.5B models are best for real-time chat (30+ tok/s generation)
+- 3B models are usable but slower (~18 tok/s generation)
 
 ## Requirements
 
@@ -21,9 +31,9 @@ Tested on Samsung Galaxy S25 (Snapdragon 8 Elite, Adreno 830):
 
 ### Tested Devices
 
-| Device | SoC | GPU | Status |
-|--------|-----|-----|--------|
-| Samsung Galaxy S25 | Snapdragon 8 Elite | Adreno 830 | ✓ 63.5 tok/s |
+| Device | SoC | GPU | Best Result |
+|--------|-----|-----|-------------|
+| Samsung Galaxy S25 | Snapdragon 8 Elite | Adreno 830 | 63.5 tok/s (0.5B) |
 
 ## Quick Start
 
@@ -71,16 +81,34 @@ export LD_LIBRARY_PATH=/vendor/lib64:$PREFIX/lib:~/llama.cpp/build/lib
 
 ## Recommended Models
 
-Models must use Q4_0 quantization for optimal Adreno performance.
+**Important:** Use Q4_0 quantization for optimal Adreno GPU performance. Q4_K and Q5_K are significantly slower.
 
-| Model | Size | RAM Needed | Use Case |
-|-------|------|------------|----------|
-| SmolLM2-135M | ~100MB | 1GB | Testing, simple tasks |
-| Qwen2.5-0.5B | ~400MB | 2GB | Fast assistant, coding |
-| Qwen2.5-1.5B | ~1GB | 4GB | Better quality |
-| Llama-3.2-1B | ~700MB | 3GB | General assistant |
-| Llama-3.2-3B | ~2GB | 6GB | High quality |
-| Phi-3-mini-4k | ~2GB | 6GB | Reasoning tasks |
+| Model | Size | Speed | Use Case |
+|-------|------|-------|----------|
+| Qwen2.5-0.5B Q4_0 | 403 MB | 63.5 tok/s | Fast assistant, quick responses |
+| Qwen2.5-1.5B Q4_0 | 1.0 GB | 34.5 tok/s | Better quality, still fast |
+| Llama-3.2-1B Q4_0 | 730 MB | 37.7 tok/s | General assistant |
+| Llama-3.2-3B Q4_0 | 1.8 GB | 18.5 tok/s | High quality, usable speed |
+
+### Model Download Links
+
+```bash
+# Qwen2.5-0.5B (recommended for speed)
+curl -L -o ~/models/qwen2.5-0.5b-q4_0.gguf \
+  "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_0.gguf"
+
+# Qwen2.5-1.5B (best balance)
+curl -L -o ~/models/qwen2.5-1.5b-q4_0.gguf \
+  "https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF/resolve/main/qwen2.5-1.5b-instruct-q4_0.gguf"
+
+# Llama-3.2-1B
+curl -L -o ~/models/llama-3.2-1b-q4_0.gguf \
+  "https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF/resolve/main/Llama-3.2-1B-Instruct-Q4_0.gguf"
+
+# Llama-3.2-3B (if you want higher quality)
+curl -L -o ~/models/llama-3.2-3b-q4_0.gguf \
+  "https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF/resolve/main/Llama-3.2-3B-Instruct-Q4_0.gguf"
+```
 
 ## Build Flags Explained
 
