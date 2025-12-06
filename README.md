@@ -104,6 +104,20 @@ Run benchmarks on all downloaded models:
 ./scripts/benchmark.sh
 ```
 
+### update.sh
+
+Update llama.cpp with automatic rollback on failure:
+
+```bash
+./scripts/update.sh              # Update to latest release
+./scripts/update.sh b5100        # Update to specific version
+./scripts/update.sh --list       # Show available versions
+./scripts/update.sh --stable     # Revert to known stable (b5026)
+./scripts/update.sh --test-only  # Test current build
+```
+
+If the new version fails to build or crashes during testing, it automatically rolls back to the previous working version.
+
 ## Manual Installation
 
 <details>
@@ -243,7 +257,8 @@ llama-droid/
 │   ├── download-model.sh  # Download models from HuggingFace
 │   ├── chat.sh            # Interactive chat wrapper
 │   ├── server.sh          # HTTP API server wrapper
-│   └── benchmark.sh       # Run benchmarks
+│   ├── benchmark.sh       # Run benchmarks
+│   └── update.sh          # Update llama.cpp with rollback
 └── LICENSE
 ```
 
