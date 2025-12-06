@@ -38,6 +38,78 @@ Tested on Samsung Galaxy S25 (Snapdragon 8 Elite, Adreno 830):
 ## Quick Start
 
 ```bash
+# Clone llama-droid
+git clone https://github.com/InquiringMinds-AI/llama-droid.git
+cd llama-droid
+
+# Run installer (builds llama.cpp with GPU support)
+./scripts/install.sh
+
+# Download a model
+./scripts/download-model.sh qwen-0.5b
+
+# Start chatting!
+./scripts/chat.sh
+```
+
+That's it! The scripts handle all the complexity.
+
+## Scripts
+
+### download-model.sh
+
+Download models with friendly names:
+
+```bash
+./scripts/download-model.sh list          # Show available models
+./scripts/download-model.sh qwen-0.5b     # Download Qwen 0.5B (fastest)
+./scripts/download-model.sh qwen-1.5b     # Download Qwen 1.5B (best balance)
+./scripts/download-model.sh llama-3b      # Download Llama 3.2 3B
+```
+
+### chat.sh
+
+Interactive chat with sensible defaults:
+
+```bash
+./scripts/chat.sh                    # Auto-detect model
+./scripts/chat.sh qwen-1.5b          # Use specific model
+./scripts/chat.sh qwen-0.5b -c 2048  # Custom context size
+./scripts/chat.sh --no-gpu           # CPU-only mode
+```
+
+### server.sh
+
+Start an OpenAI-compatible HTTP API:
+
+```bash
+./scripts/server.sh                  # Start server on localhost:8080
+./scripts/server.sh qwen-1.5b        # Use specific model
+./scripts/server.sh -p 3000          # Custom port
+./scripts/server.sh -H 0.0.0.0       # Listen on all interfaces
+```
+
+Test the API:
+```bash
+curl http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"messages":[{"role":"user","content":"Hello!"}]}'
+```
+
+### benchmark.sh
+
+Run benchmarks on all downloaded models:
+
+```bash
+./scripts/benchmark.sh
+```
+
+## Manual Installation
+
+<details>
+<summary>Click to expand manual installation steps</summary>
+
+```bash
 # Install dependencies
 pkg update && pkg upgrade
 pkg install git cmake clang clinfo ocl-icd opencl-headers
@@ -78,6 +150,8 @@ export LD_LIBRARY_PATH=/vendor/lib64:$PREFIX/lib:~/llama.cpp/build/lib
 # Interactive chat
 ./build/bin/llama-cli -m ~/models/qwen2.5-0.5b-q4_0.gguf -cnv
 ```
+
+</details>
 
 ## Recommended Models
 
@@ -163,18 +237,20 @@ Check that OpenCL is working:
 
 ```
 llama-droid/
-├── README.md           # This file
+├── README.md              # This file
 ├── scripts/
-│   ├── install.sh      # One-line installer
-│   └── benchmark.sh    # Run benchmarks
-└── models/             # Model download scripts
+│   ├── install.sh         # Build llama.cpp with GPU support
+│   ├── download-model.sh  # Download models from HuggingFace
+│   ├── chat.sh            # Interactive chat wrapper
+│   ├── server.sh          # HTTP API server wrapper
+│   └── benchmark.sh       # Run benchmarks
+└── LICENSE
 ```
 
 ## Roadmap
 
 - [ ] Pre-built binaries for common devices
 - [ ] MCP server for Claude Code integration
-- [ ] Model downloader with HuggingFace integration
 - [ ] GUI app (future)
 
 ## License
