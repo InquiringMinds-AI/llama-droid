@@ -259,13 +259,63 @@ llama-droid/
 │   ├── server.sh          # HTTP API server wrapper
 │   ├── benchmark.sh       # Run benchmarks
 │   └── update.sh          # Update llama.cpp with rollback
+├── llama_droid/           # Python package
+│   ├── __init__.py
+│   ├── cli.py             # CLI entry point
+│   └── mcp_server.py      # MCP server implementation
+├── pyproject.toml         # Python package config
 └── LICENSE
 ```
+
+## MCP Server
+
+llama-droid includes an MCP (Model Context Protocol) server for integration with Claude Code, Claude Desktop, Cursor, and other MCP-compatible clients.
+
+### Setup
+
+```bash
+# Install the Python package
+pip install -e .
+
+# Add to ~/.claude/mcp.json
+{
+  "mcpServers": {
+    "llm": {
+      "command": "llama-droid",
+      "args": ["serve"],
+      "env": {
+        "LD_LIBRARY_PATH": "/vendor/lib64:/data/data/com.termux/files/usr/lib"
+      }
+    }
+  }
+}
+
+# Restart Claude Code to connect
+```
+
+### Available Tools
+
+| Tool | Description |
+|------|-------------|
+| `llm_complete` | Generate text completion |
+| `llm_chat` | Chat with message history |
+| `llm_list_models` | List available models |
+| `llm_status` | Check server status |
+| `llm_start` | Start server with specific model |
+| `llm_stop` | Stop server to free resources |
+
+### Privacy Use Case
+
+Use local LLM for privacy-sensitive tasks:
+- Email summarization without sending to cloud
+- Processing personal documents locally
+- Any task where data shouldn't leave your device
+
+The MCP server runs llama-server on localhost only (127.0.0.1) and uses stdio transport - no network exposure.
 
 ## Roadmap
 
 - [ ] Pre-built binaries for common devices
-- [ ] MCP server for Claude Code integration
 - [ ] GUI app (future)
 
 ## License
